@@ -1,0 +1,38 @@
+:root {
+  font-family: poppins;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* --- colors --- */
+  --color-primary: red;
+
+  --color-secondary: blue;
+
+  --color-background-1: #f4f6f8;
+  --color-background-2: #f4f6f8;
+
+  --color-text-1: #333333;
+  --color-text-2: #333333;
+
+  --color-button-1: #f4f6f8;
+  --color-button-2: #f4f6f8;
+}
+
+body {
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

@@ -1,0 +1,50 @@
+:root {
+}
+
+.home-page-section-1 {
+  /* margin-top: 20px; */
+  margin-bottom: 20px;
+}
+
+/* react-slick default styles */
+.slick-slider {
+  position: relative;
+}
+.slick-dots li button:before {
+  color: white;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* student pass application page------------------------------------------- */
+.double-inputs {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* ********************************** 800px ******************************** */
+@media screen and (max-width: 800px) {
+  .cards-container {
+    flex-direction: column;
+    margin: 5%;
+  }
+}
+
+/* ********************************** 600px ******************************** */
+@media screen and (max-width: 600px) {
+  .double-inputs {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+/* ********************************** 400px ******************************** */
+@media screen and (max-width: 400px) {
+}

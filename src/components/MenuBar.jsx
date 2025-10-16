@@ -20,6 +20,8 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase/config"; 
 
 const MenuBar = () => {
     const theme = useTheme();
@@ -55,6 +57,17 @@ const MenuBar = () => {
         { text: "Contact Us", path: "/contact_us" },
         { text: "Complains", path: "/complains" },
     ];
+
+    const handleLogout = async () => {
+    try {
+      await signOut(auth); // sign out the user
+      navigate("/login");  // redirect to login
+      console.log('logout');
+      
+    } catch (err) {
+      console.error("Error signing out:", err);
+    }
+  };
 
     return (
         <>
@@ -111,10 +124,10 @@ const MenuBar = () => {
 
                     {!isMobile && (
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                            <IconButton color="inherit">
+                            <IconButton color="inherit" onClick={() => navigate("/profile")}>
                                 <Avatar alt="Profile" src="/static/images/avatar/1.jpg" />
                             </IconButton>
-                            <IconButton color="inherit" onClick={() => navigate("/login")}>
+                            <IconButton color="inherit" onClick={handleLogout}>
                                 <LogoutIcon />
                             </IconButton>
                         </Box>
@@ -126,18 +139,18 @@ const MenuBar = () => {
             <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
                 <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
                     <List>
-                        <ListItem>
+                        <ListItem onClick={() => navigate("/profile")}>
                             <Avatar alt="Profile" src="/static/images/avatar/1.jpg" />
                         </ListItem>
                         {menuItems_1.map((item) => (
                             <ListItem key={item.text} disablePadding>
-                                <ListItemButton component={Link} to={item.path}>
+                                <ListItemButton  component={Link} to={item.path}>
                                     <ListItemText primary={item.text} />
                                 </ListItemButton>
                             </ListItem>
                         ))}
                         <ListItem disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={handleLogout}>
                                 <LogoutIcon sx={{ mr: 1 }} />
                                 <ListItemText primary="Logout" />
                             </ListItemButton>

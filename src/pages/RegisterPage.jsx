@@ -1,17 +1,33 @@
-import {createUserWithEmailAndPassword} from "firebase/auth";
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Checkbox,
+    FormControlLabel,
+    Link,
+    Paper,
+    MenuItem,
+    CircularProgress
+} from "@mui/material";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/config";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
+        userType: "user", // Added userType
         termsChecked: false,
     });
 
@@ -23,30 +39,50 @@ const RegisterPage = () => {
         }));
     };
 
-    const handleRegister = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await createUserWithEmailPassword(auth,email,password);
-            const user=auth.currentUser;
-            console.log(user);
-            console.log("User Registered Successfully!!");
-        }catch (error){
-            console.log(error.message);
-        }
-    };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+        setLoading(true);
+
         if (!formData.termsChecked) {
             alert("You must agree to the terms and conditions!");
             return;
         }
+
         if (formData.password !== formData.confirmPassword) {
             alert("Passwords do not match!");
             return;
         }
-        console.log(formData);
-        // Add your registration logic here
+
+        if (!formData.userType) {
+            alert("Please select a user type!");
+            return;
+        }
+
+        try {
+            // Create Firebase auth user
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+            const user = userCredential.user;
+
+            // Save user data to Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                name: formData.username,
+                email: formData.email,
+                userType: formData.userType,
+                createdAt: new Date(),
+            });
+
+            alert("Registration successful!");
+            navigate("/login");
+        } catch (error) {
+            console.error("Error registering user:", error.message);
+            alert(error.message);
+        }
+        setLoading(false);
     };
 
     return (
@@ -75,9 +111,10 @@ const RegisterPage = () => {
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
+
                     <TextField
                         fullWidth
-                        label="Username"
+                        label="Name"
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
@@ -119,6 +156,22 @@ const RegisterPage = () => {
                         size="small"
                     />
 
+                    {/* <TextField
+                        select
+                        label="User Type"
+                        name="userType"
+                        value={formData.userType}
+                        onChange={handleChange}
+                        fullWidth
+                        margin="normal"
+                        required
+                        size="small"
+                    >
+                        <MenuItem value="student">Student</MenuItem>
+                        <MenuItem value="uni_student">University Student</MenuItem>
+                        <MenuItem value="adult">Adult</MenuItem>
+                    </TextField> */}
+
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -145,9 +198,13 @@ const RegisterPage = () => {
                         color="primary"
                         fullWidth
                         sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
-                        onClick={() => navigate()}
+                        disabled={loading}
                     >
-                        Register
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "Register"
+                        )}
                     </Button>
 
                     <Typography variant="body2" textAlign="center" mt={2}>
@@ -157,7 +214,7 @@ const RegisterPage = () => {
                             variant="body2"
                             onClick={() => navigate("/login")}
                         >
-                            Login
+                            Register
                         </Link>
                     </Typography>
                 </form>

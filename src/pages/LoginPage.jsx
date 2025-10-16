@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+import { Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link, Paper, CircularProgress } from "@mui/material";
+
+import { signInWithEmailAndPassword, } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/config";
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        usernameOrEmail: "",
+        email: "",
         password: "",
         rememberMe: false,
     });
@@ -19,10 +25,47 @@ const LoginPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
-        // Add login logic here
+        setLoading(true);
+
+        try {
+            // Firebase login
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+
+            const user = userCredential.user;
+
+            // Fetch user data from Firestore
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                console.log("User data:", userData);
+
+                // Save user info to localStorage (if remember me is checked)
+                if (formData.rememberMe) {
+                    localStorage.setItem("user", JSON.stringify(userData));
+                }
+
+                // Redirect user based on role
+                if (userData.userType === "admin") {
+                    navigate("/admin/dashboard");
+                } else {
+                    navigate("/");
+                }
+            } else {
+                alert("User data not found in the database!");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("Invalid email or password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -52,9 +95,9 @@ const LoginPage = () => {
                 <form onSubmit={handleSubmit}>
                     <TextField
                         fullWidth
-                        label="Username or Email"
-                        name="usernameOrEmail"
-                        value={formData.usernameOrEmail}
+                        label="Email"
+                        name="email"
+                        value={formData.email}
                         onChange={handleChange}
                         margin="normal"
                         required
@@ -94,9 +137,13 @@ const LoginPage = () => {
                         color="primary"
                         fullWidth
                         sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
-                        onClick={() => navigate("/")}
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? (
+                            <CircularProgress size={24} />
+                        ) : (
+                            "Login"
+                        )}
                     </Button>
 
                     <Typography variant="body2" textAlign="center" mt={2}>

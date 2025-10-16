@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
-import { useAuth } from "../../context/AthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const ProfilePage = () => {
 

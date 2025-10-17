@@ -220,7 +220,7 @@ const RegisterPage = () => {
                             variant="body2"
                             onClick={() => navigate("/login")}
                         >
-                            Register
+                            Login
                         </Link>
                     </Typography>
                 </form>

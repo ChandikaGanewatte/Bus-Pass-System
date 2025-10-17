@@ -17,10 +17,12 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
+import { useNotification } from "../context/NotificationContext";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
 
     const [formData, setFormData] = useState({
         username: "",
@@ -45,17 +47,22 @@ const RegisterPage = () => {
         setLoading(true);
 
         if (!formData.termsChecked) {
-            alert("You must agree to the terms and conditions!");
+            // alert("You must agree to the terms and conditions!");
+            showNotification("You must agree to the terms and conditions!", "info");
+            setLoading(false);
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            // alert("Passwords do not match!");
+            showNotification("Passwords do not match!", "info");
+             setLoading(false);
             return;
         }
 
         if (!formData.userType) {
-            alert("Please select a user type!");
+            // alert("Please select a user type!");
+             setLoading(false);
             return;
         }
 
@@ -76,11 +83,11 @@ const RegisterPage = () => {
                 createdAt: new Date(),
             });
 
-            alert("Registration successful!");
+            showNotification("Registration successful!", "success");
             navigate("/login");
         } catch (error) {
             console.error("Error registering user:", error.message);
-            alert(error.message);
+            showNotification(error.message, "error");
         }
         setLoading(false);
     };
@@ -97,7 +104,6 @@ const RegisterPage = () => {
                 p: 2,
             }}
         >
-
 
             <img src="/logo.png" alt="Logo" style={{ width: 100, height: 100 }} />
             <Typography mb={2} variant="h4" fontWeight={700} color="white">

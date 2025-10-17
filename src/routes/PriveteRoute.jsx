@@ -13,7 +13,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 
   // Role-based access
   if (allowedRoles && !allowedRoles.includes(currentUser?.userType)) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

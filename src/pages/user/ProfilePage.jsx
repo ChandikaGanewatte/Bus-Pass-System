@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Paper,
@@ -7,14 +7,57 @@ import {
   Divider,
   Grid,
   Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import MenuBar from "../../components/MenuBar";
+
 import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
+import { auth, db } from "../../firebase/config";
+import { deleteUser } from "firebase/auth";
+import { doc, deleteDoc } from "firebase/firestore";
+import { useNotification } from "../../context/NotificationContext";
 
 const ProfilePage = () => {
+  const { currentUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotification();
+  const [openConfirm, setOpenConfirm] = useState(false);
 
-   const { currentUser } = useAuth();
+  const handleDeleteAccount = async () => {
+    // if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    //   return;
+    // }
+    setLoading(true);
+
+    try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        showNotification("No user is currently logged in.", "error")
+        return;
+      }
+
+      await deleteDoc(doc(db, "users", user.uid));
+      await deleteUser(user);
+      showNotification("Account Deleted !", "success");
+      window.location.href = "/login";
+
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      if (error.code === "auth/requires-recent-login") {
+        showNotification("Please log in again before deleting your account.", "Info");
+      } else {
+        showNotification("Failed to delete account.", "Info");
+      }
+    }
+    setLoading(false);
+    setOpenConfirm(false);
+  };
 
   if (!currentUser) return <Typography>Loading user...</Typography>;
 
@@ -110,12 +153,43 @@ const ProfilePage = () => {
             <Button variant="contained" color="primary">
               Edit Profile
             </Button>
-            <Button variant="outlined" color="error">
-              Delete Account
+            <Button disabled={loading} variant="outlined" color="error" onClick={() => setOpenConfirm(true)} >
+              {loading ? (
+                <CircularProgress size={24} />
+              ) : (
+                "Delete Account"
+              )}
             </Button>
           </Box>
         </Paper>
       </Box>
+
+      <Dialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        aria-labelledby="confirm-dialog-title"
+      >
+        <DialogTitle id="confirm-dialog-title">Confirm Account Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete your account? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteAccount}
+            color="error"
+            variant="contained"
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={22} color="inherit" /> : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
       <Footer />
     </div>

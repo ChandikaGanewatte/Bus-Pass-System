@@ -6,10 +6,12 @@ import { Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link, P
 import { signInWithEmailAndPassword, } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
+import { useNotification } from "../context/NotificationContext";
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { showNotification } = useNotification();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -54,15 +56,17 @@ const LoginPage = () => {
                 // Redirect user based on role
                 if (userData.userType === "admin") {
                     navigate("/admin/dashboard");
+                    showNotification("Login Success!", "success");
                 } else {
                     navigate("/");
+                    showNotification("Login Success!", "success");
                 }
             } else {
-                alert("User data not found in the database!");
+                showNotification("User data not found in the database!", "error");
             }
         } catch (error) {
             console.error("Login error:", error);
-            alert("Invalid email or password");
+            showNotification("Invalid email or password", "error");
         } finally {
             setLoading(false);
         }

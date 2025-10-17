@@ -87,7 +87,7 @@ const LoginPage = () => {
             {/* Banner */}
             <img src="/logo.png" alt="Logo" style={{ width: 100, height: 100 }} />
             <Typography mb={2} variant="h4" fontWeight={700} color="white">
-                Sri Lanka Transport Board
+                Bus Pass System
             </Typography>
 
             {/* Login Form */}

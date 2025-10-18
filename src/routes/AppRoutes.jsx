@@ -15,6 +15,10 @@ import Adults from "../pages/apply_pass/Adults";
 
 import ProfilePage from "../pages/user/ProfilePage";
 
+import Dashboard from "../pages/admin/Dashboard";
+import IssuedPasses from "../pages/admin/IssuedPasses";
+import PendingPasses from "../pages/admin/PendingPasses";
+
 const AppRoutes = () => {
     return (
         <Routes>
@@ -53,6 +57,12 @@ const AppRoutes = () => {
                     <ProfilePage />
                 </PrivateRoute>
             } />
+
+
+            {/* ************************* ADMIN ROUTES ************************* */}
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/issued_passes" element={<IssuedPasses />} />
+            <Route path="/admin/pending_passes" element={<PendingPasses />} />
         </Routes>
     );
 };

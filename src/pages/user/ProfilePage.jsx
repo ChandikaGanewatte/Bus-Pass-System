@@ -12,28 +12,41 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField
 } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from "@mui/icons-material/Download";
 import MenuBar from "../../components/MenuBar";
 
 import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { auth, db } from "../../firebase/config";
-import { deleteUser } from "firebase/auth";
-import { doc, deleteDoc } from "firebase/firestore";
+import { deleteUser, updateProfile } from "firebase/auth";
+import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { useNotification } from "../../context/NotificationContext";
 
 const ProfilePage = () => {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { showNotification } = useNotification();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: currentUser?.name || "",
+    phone: currentUser?.phone || "",
+    address: currentUser?.address || "",
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleDeleteAccount = async () => {
-    // if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-    //   return;
-    // }
     setLoading(true);
-
     try {
       const user = auth.currentUser;
 
@@ -58,6 +71,36 @@ const ProfilePage = () => {
     setLoading(false);
     setOpenConfirm(false);
   };
+
+  const handleEditToggle = async () => {
+    if (isEditing) {
+      // Save changes
+      setSaving(true);
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, {
+          name: formData.name,
+          phone: formData.phone,
+          address: formData.address,
+        });
+
+        // Optionally update Firebase Auth profile name
+        await updateProfile(auth.currentUser, {
+          displayName: formData.name,
+        });
+
+        showNotification("Profile updated successfully!", "success");
+        setIsEditing(false);
+      } catch (error) {
+        console.error(error);
+        showNotification("Failed to update profile.", "error");
+      }
+      setSaving(false);
+    } else {
+      setIsEditing(true);
+    }
+  };
+
 
   if (!currentUser) return <Typography>Loading user...</Typography>;
 
@@ -85,6 +128,20 @@ const ProfilePage = () => {
             p: 4,
           }}
         >
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<DownloadIcon />}
+              sx={{
+                borderRadius: 2,
+                fontWeight: 600,
+                textTransform: "none",
+              }}
+            >
+              Download E-Pass
+            </Button>
+          </Box>
           {/* Header */}
           <Box
             sx={{
@@ -99,45 +156,51 @@ const ProfilePage = () => {
               src={currentUser.avatar}
               sx={{ width: 100, height: 100, mb: 2 }}
             />
-            <Typography variant="h5" fontWeight={700}>
-              {currentUser.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {currentUser.userType}
-            </Typography>
+            <TextField
+              label="Full Name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+              fullWidth
+                       size="small"
+            />
           </Box>
 
           <Divider sx={{ mb: 3 }} />
 
-          {/* Info Section */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Email
-              </Typography>
-              <Typography variant="body1" fontWeight={500}>
-                {currentUser.email}
-              </Typography>
-            </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Phone
-              </Typography>
-              <Typography variant="body1" fontWeight={500}>
-                {currentUser.phone}
-              </Typography>
-            </Grid>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 
-            <Grid item xs={12}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Address
-              </Typography>
-              <Typography variant="body1" fontWeight={500}>
-                {currentUser.address}
-              </Typography>
-            </Grid>
-          </Grid>
+            <TextField
+              label="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+              fullWidth
+              multiline
+              rows={2}
+                       size="small"
+            />
+            <TextField
+              label="Email"
+              value={currentUser.email}
+              disabled
+              fullWidth
+                       size="small"
+            />
+          </Box>
+
 
           <Divider sx={{ my: 3 }} />
 
@@ -150,10 +213,20 @@ const ProfilePage = () => {
               flexWrap: "wrap",
             }}
           >
-            <Button variant="contained" color="primary">
-              Edit Profile
+            <Button
+              variant="contained"
+              color={isEditing ? "success" : "primary"}
+              onClick={handleEditToggle}
+              startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
+              disabled={saving}
+            >
+              {saving ? (
+                <CircularProgress size={24} />
+              ) : (
+                isEditing ? "Save Changes" : "Edit Profile"
+              )}
             </Button>
-            <Button disabled={loading} variant="outlined" color="error" onClick={() => setOpenConfirm(true)} >
+            <Button startIcon={<DeleteIcon />} disabled={loading} variant="outlined" color="error" onClick={() => setOpenConfirm(true)} >
               {loading ? (
                 <CircularProgress size={24} />
               ) : (
@@ -184,6 +257,7 @@ const ProfilePage = () => {
             color="error"
             variant="contained"
             disabled={loading}
+            startIcon={<DeleteIcon />}
           >
             {loading ? <CircularProgress size={22} color="inherit" /> : "Delete"}
           </Button>

@@ -21,7 +21,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase/config"; 
+import { auth } from "../firebase/config";
 
 const MenuBar = () => {
     const theme = useTheme();
@@ -52,22 +52,22 @@ const MenuBar = () => {
 
     const menuItems_1 = [
         { text: "Home", path: "/" },
-        { text: "About Us", path: "/about_us" },
         { text: "Bus Passes", path: "/bus_passes" },
-        { text: "Contact Us", path: "/contact_us" },
         { text: "Complains", path: "/complains" },
+        { text: "Contact", path: "/contact_us" },
+        { text: "About Us", path: "/about_us" },
     ];
 
     const handleLogout = async () => {
-    try {
-      await signOut(auth); // sign out the user
-      navigate("/login");  // redirect to login
-      console.log('logout');
-      
-    } catch (err) {
-      console.error("Error signing out:", err);
-    }
-  };
+        try {
+            await signOut(auth); // sign out the user
+            navigate("/login");  // redirect to login
+            console.log('logout');
+
+        } catch (err) {
+            console.error("Error signing out:", err);
+        }
+    };
 
     return (
         <>
@@ -144,7 +144,7 @@ const MenuBar = () => {
                         </ListItem>
                         {menuItems_1.map((item) => (
                             <ListItem key={item.text} disablePadding>
-                                <ListItemButton  component={Link} to={item.path}>
+                                <ListItemButton component={Link} to={item.path}>
                                     <ListItemText primary={item.text} />
                                 </ListItemButton>
                             </ListItem>

@@ -14,6 +14,7 @@ import UniStudents from "../pages/apply_pass/UniStudents";
 import Adults from "../pages/apply_pass/Adults";
 
 import ProfilePage from "../pages/user/ProfilePage";
+import BusPassPage from "../pages/user/busPassPage";
 
 import Dashboard from "../pages/admin/Dashboard";
 import IssuedPasses from "../pages/admin/IssuedPasses";
@@ -28,6 +29,7 @@ const AppRoutes = () => {
             <Route path="/contact_us" element={<ContactUs />} />
             <Route path="/complains" element={<ComplainsPage />} />
             <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/bus_passes" element={<BusPassPage />} />
 
             {/* ************************* PROTECTED ROUTES ************************* */}
             <Route path="/" element={

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
     Typography,
@@ -14,10 +15,20 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
+import { db, storage } from "../../firebase/config"; 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
+import { useNotification } from "../../context/NotificationContext";
+import { useAuth } from "../../context/AuthContext";
 
 const UniStudents = () => {
+    const { currentUser } = useAuth();
+    const { showNotification } = useNotification();
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         university: "",
@@ -30,6 +41,8 @@ const UniStudents = () => {
         paymentSlip: null,
     });
 
+    const [loading, setLoading] = useState(false);
+
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         setFormData((prev) => ({
@@ -38,10 +51,70 @@ const UniStudents = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data:", formData);
-        alert("Application Submitted Successfully!");
+        setLoading(true);
+
+        if (!formData.photo || !formData.paymentSlip) {
+            showNotification("Please upload both student photo and payment slip.", "error");
+            return;
+        }
+
+        try {
+            if (!currentUser) {
+                showNotification("You must be logged in to apply.", "error");
+                return;
+            }
+
+            // Upload photo
+            const photoRef = ref(storage, `applications/${currentUser.uid}/photo_${Date.now()}`);
+            await uploadBytes(photoRef, formData.photo);
+            const photoURL = await getDownloadURL(photoRef);
+
+            // Upload payment slip
+            const slipRef = ref(storage, `applications/${currentUser.uid}/slip_${Date.now()}`);
+            await uploadBytes(slipRef, formData.paymentSlip);
+            const slipURL = await getDownloadURL(slipRef);
+
+            // Create application doc
+            await addDoc(collection(db, "applications"), {
+                userId: currentUser.uid,
+                userType: "uni_student",
+                status: "pending",
+                appliedAt: serverTimestamp(),
+                formData: {
+                    name: formData.name,
+                    university: formData.university,
+                    regNo: formData.regNo,
+                    birthday: formData.birthday,
+                    depot: formData.depot,
+                    route: formData.route,
+                    days: formData.days,
+                    photoURL,
+                    paymentSlipURL: slipURL,
+                },
+            });
+
+            showNotification("Application submitted successfully!", "success");
+            // setFormData({
+            //     name: "",
+            //     school: "",
+            //     regNo: "",
+            //     grade: "",
+            //     birthday: null,
+            //     depot: "",
+            //     route: "",
+            //     days: "",
+            //     photo: null,
+            //     paymentSlip: null,
+            // });
+            navigate('/')
+        } catch (error) {
+            console.error("Error submitting application:", error);
+            showNotification("Failed to submit application.", "error");
+        }
+
+        setLoading(false);
     };
 
     return (
@@ -151,7 +224,7 @@ const UniStudents = () => {
                             variant="outlined"
                             component="label"
                             fullWidth
-                            sx={{ borderRadius: 2, mb: 2 }}
+                            sx={{ borderRadius: 2 }}
                         >
                             Upload University ID Photo
                             <input
@@ -162,9 +235,14 @@ const UniStudents = () => {
                                 onChange={handleChange}
                             />
                         </Button>
-                        {formData.photo && (
-                            <Typography variant="body2" mt={1}>
-                                {formData.photo.name}
+
+                        {formData.photo ? (
+                            <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
+                                ✅ {formData.photo.name}
+                            </Typography>
+                        ) : (
+                            <Typography variant="body2" mt={1} color="error" mb={2}>
+                                * Student photo is required
                             </Typography>
                         )}
 
@@ -182,11 +260,15 @@ const UniStudents = () => {
                                 accept="image/*,.pdf"
                                 onChange={handleChange}
                             />
-
                         </Button>
-                        {formData.paymentSlip && (
-                            <Typography variant="body2" mt={1}>
-                                {formData.paymentSlip.name}
+
+                        {formData.paymentSlip ? (
+                            <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
+                                ✅ {formData.paymentSlip.name}
+                            </Typography>
+                        ) : (
+                            <Typography variant="body2" mt={1} color="error" mb={2}>
+                                * Payment slip is required
                             </Typography>
                         )}
 
@@ -196,8 +278,9 @@ const UniStudents = () => {
                             color="primary"
                             fullWidth
                             sx={{ mt: 2, py: 1.3, borderRadius: 2 }}
+                            disabled={loading}
                         >
-                            Submit Application
+                            {loading ? "Submitting..." : "Submit Application"}
                         </Button>
 
                     </form>

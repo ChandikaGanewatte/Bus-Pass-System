@@ -62,7 +62,7 @@ const IssuedPassDetails = () => {
     doc.setFontSize(9);
     doc.setTextColor("#fff");
     doc.setFont("helvetica", "bold");
-    doc.text("STATE TRANSPORT BUS PASS", 44, 8, { align: "center" });
+    doc.text("SLTB - BUS PASS", 44, 8, { align: "center" });
 
     doc.setTextColor(textColor);
     doc.setFont("helvetica", "normal");

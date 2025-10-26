@@ -13,7 +13,7 @@ import {
 import { ref, getDownloadURL, uploadString } from "firebase/storage";
 import QRCode from "qrcode";
 
-// get all pass applicatons - admin
+// get all pass applicatons - admin ----------------------------------------
 export const getStudentPendingApplications = async () => {
   try {
     const q = query(
@@ -30,7 +30,7 @@ export const getStudentPendingApplications = async () => {
   }
 };
 
-// get a pass application details - admin
+// get a pass application details - admin ---------------------------------
 export const getApplicationDetails = async (docId) => {
   try {
     const docRef = doc(db, "applications", docId); // <-- collection name must match your DB
@@ -48,20 +48,26 @@ export const getApplicationDetails = async (docId) => {
   }
 };
 
-// approve the pass application - admin
+// approve the pass application - admin -----------------------------------
 export const approvePassApplicationWithQR = async (application) => {
   try {
     const docRef = doc(db, "applications", application.id);
 
-    const expiryDate = Timestamp.fromDate(
-      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    );
+    // Extract year and month from formData.passPeriod ("YYYY-M")
+    const [year, month] = application.formData.passPeriod
+      ? application.formData.passPeriod.split("-").map(Number)
+      : [new Date().getFullYear(), new Date().getMonth() + 1];
 
+    // Get last day of the month
+    const expiryDateObj = new Date(year, month, 0); // day=0 gives last day of previous month, so month is next month index
+    const expiryDate = Timestamp.fromDate(expiryDateObj);
+
+    // Prepare QR code data
     const qrData = JSON.stringify({
       userId: application.userId,
       expiry: expiryDate.toDate().toISOString(),
-      depot: application.depot,
-      route:application.route
+      depot: application.formData.depot,
+      route: application.formData.route,
     });
 
     const qrCodeDataUrl = await QRCode.toDataURL(qrData);
@@ -79,6 +85,7 @@ export const approvePassApplicationWithQR = async (application) => {
       status: "approved",
       approvedAt: serverTimestamp(),
       qrCodeURL,
+      expiryDate,
     });
 
     return qrCodeURL; // return the QR code URL if needed
@@ -88,7 +95,7 @@ export const approvePassApplicationWithQR = async (application) => {
   }
 };
 
-// get all pass applicatons - admin
+// get all pass applicatons - admin -----------------------------------------
 export const getStudentApprovedApplications = async () => {
   try {
     const q = query(
@@ -104,3 +111,4 @@ export const getStudentApprovedApplications = async () => {
     return [];
   }
 };
+

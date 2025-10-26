@@ -19,6 +19,8 @@ import BusPassPage from "../pages/user/busPassPage";
 import Dashboard from "../pages/admin/Dashboard";
 import IssuedPasses from "../pages/admin/IssuedPasses";
 import PendingPasses from "../pages/admin/PendingPasses";
+import PendingPassDetails from "../pages/admin/PendingPassDetail";
+import IssuedPassDetails from "../pages/admin/IssuedPassDetails";
 
 const AppRoutes = () => {
     return (
@@ -65,6 +67,8 @@ const AppRoutes = () => {
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/issued_passes" element={<IssuedPasses />} />
             <Route path="/admin/pending_passes" element={<PendingPasses />} />
+            <Route path="/admin/pending_passes/:id" element={<PendingPassDetails />} />
+            <Route path="/admin/issued_passes/:id" element={<IssuedPassDetails />} />
         </Routes>
     );
 };

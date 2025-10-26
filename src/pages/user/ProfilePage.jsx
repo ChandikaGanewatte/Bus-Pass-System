@@ -12,9 +12,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
 } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -51,7 +51,7 @@ const ProfilePage = () => {
       const user = auth.currentUser;
 
       if (!user) {
-        showNotification("No user is currently logged in.", "error")
+        showNotification("No user is currently logged in.", "error");
         return;
       }
 
@@ -59,11 +59,13 @@ const ProfilePage = () => {
       await deleteUser(user);
       showNotification("Account Deleted !", "success");
       window.location.href = "/login";
-
     } catch (error) {
       console.error("Error deleting account:", error);
       if (error.code === "auth/requires-recent-login") {
-        showNotification("Please log in again before deleting your account.", "Info");
+        showNotification(
+          "Please log in again before deleting your account.",
+          "Info"
+        );
       } else {
         showNotification("Failed to delete account.", "Info");
       }
@@ -100,7 +102,6 @@ const ProfilePage = () => {
       setIsEditing(true);
     }
   };
-
 
   if (!currentUser) return <Typography>Loading user...</Typography>;
 
@@ -163,15 +164,13 @@ const ProfilePage = () => {
               onChange={handleInputChange}
               disabled={!isEditing}
               fullWidth
-                       size="small"
+              size="small"
             />
           </Box>
 
           <Divider sx={{ mb: 3 }} />
 
-
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-
             <TextField
               label="Phone"
               name="phone"
@@ -190,17 +189,16 @@ const ProfilePage = () => {
               fullWidth
               multiline
               rows={2}
-                       size="small"
+              size="small"
             />
             <TextField
               label="Email"
               value={currentUser.email}
               disabled
               fullWidth
-                       size="small"
+              size="small"
             />
           </Box>
-
 
           <Divider sx={{ my: 3 }} />
 
@@ -222,16 +220,20 @@ const ProfilePage = () => {
             >
               {saving ? (
                 <CircularProgress size={24} />
+              ) : isEditing ? (
+                "Save Changes"
               ) : (
-                isEditing ? "Save Changes" : "Edit Profile"
+                "Edit Profile"
               )}
             </Button>
-            <Button startIcon={<DeleteIcon />} disabled={loading} variant="outlined" color="error" onClick={() => setOpenConfirm(true)} >
-              {loading ? (
-                <CircularProgress size={24} />
-              ) : (
-                "Delete Account"
-              )}
+            <Button
+              startIcon={<DeleteIcon />}
+              disabled={loading}
+              variant="outlined"
+              color="error"
+              onClick={() => setOpenConfirm(true)}
+            >
+              {loading ? <CircularProgress size={24} /> : "Delete Account"}
             </Button>
           </Box>
         </Paper>
@@ -242,10 +244,13 @@ const ProfilePage = () => {
         onClose={() => setOpenConfirm(false)}
         aria-labelledby="confirm-dialog-title"
       >
-        <DialogTitle id="confirm-dialog-title">Confirm Account Deletion</DialogTitle>
+        <DialogTitle id="confirm-dialog-title">
+          Confirm Account Deletion
+        </DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete your account? This action cannot be undone.
+            Are you sure you want to delete your account? This action cannot be
+            undone.
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -259,11 +264,14 @@ const ProfilePage = () => {
             disabled={loading}
             startIcon={<DeleteIcon />}
           >
-            {loading ? <CircularProgress size={22} color="inherit" /> : "Delete"}
+            {loading ? (
+              <CircularProgress size={22} color="inherit" />
+            ) : (
+              "Delete"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
-
 
       <Footer />
     </div>

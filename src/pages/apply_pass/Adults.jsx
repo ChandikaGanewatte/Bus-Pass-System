@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Paper,
-    MenuItem,
-    InputLabel,
-    Select,
-    FormControl,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  MenuItem,
+  InputLabel,
+  Select,
+  FormControl,
+  Divider,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -25,273 +26,321 @@ import { useNotification } from "../../context/NotificationContext";
 import { useAuth } from "../../context/AuthContext";
 
 const Adults = () => {
-    const { currentUser } = useAuth();
-    const { showNotification } = useNotification();
-    const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const { showNotification } = useNotification();
+  const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
-        name: "",
-        nic: "",
-        workPlace: "",
-        birthday: null,
-        depot: "",
-        route: "",
-        days: "",
-        photo: null,
-        paymentSlip: null,
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    nic: "",
+    workPlace: "",
+    birthday: null,
+    depot: "",
+    route: "",
+    days: "",
+    passMonth: "",
+    photo: null,
+    paymentSlip: null,
+  });
 
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: files ? files[0] : value,
-        }));
-    };
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        if (!formData.photo || !formData.paymentSlip) {
-            showNotification("Please upload both student photo and payment slip.", "error");
-            return;
-        }
+    if (!formData.photo || !formData.paymentSlip) {
+      showNotification(
+        "Please upload both student photo and payment slip.",
+        "error"
+      );
+      return;
+    }
 
-        try {
-            if (!currentUser) {
-                showNotification("You must be logged in to apply.", "error");
-                return;
-            }
+    try {
+      if (!currentUser) {
+        showNotification("You must be logged in to apply.", "error");
+        return;
+      }
 
-            // Upload photo
-            const photoRef = ref(storage, `applications/${currentUser.uid}/photo_${Date.now()}`);
-            await uploadBytes(photoRef, formData.photo);
-            const photoURL = await getDownloadURL(photoRef);
+      // Upload photo
+      const photoRef = ref(
+        storage,
+        `applications/${currentUser.uid}/photo_${Date.now()}`
+      );
+      await uploadBytes(photoRef, formData.photo);
+      const photoURL = await getDownloadURL(photoRef);
 
-            // Upload payment slip
-            const slipRef = ref(storage, `applications/${currentUser.uid}/slip_${Date.now()}`);
-            await uploadBytes(slipRef, formData.paymentSlip);
-            const slipURL = await getDownloadURL(slipRef);
+      // Upload payment slip
+      const slipRef = ref(
+        storage,
+        `applications/${currentUser.uid}/slip_${Date.now()}`
+      );
+      await uploadBytes(slipRef, formData.paymentSlip);
+      const slipURL = await getDownloadURL(slipRef);
 
-            // Create application doc
-            await addDoc(collection(db, "applications"), {
-                userId: currentUser.uid,
-                userType: "adult",
-                status: "pending",
-                appliedAt: serverTimestamp(),
-                formData: {
-                    name: formData.name,
-                    nic: formData.nic,
-                    workPlace: formData.workPlace,
-                    birthday: formData.birthday,
-                    depot: formData.depot,
-                    route: formData.route,
-                    days: formData.days,
-                    photoURL,
-                    paymentSlipURL: slipURL,
-                },
-            });
+      // Create application doc
+      await addDoc(collection(db, "applications"), {
+        userId: currentUser.uid,
+        userType: "adult",
+        status: "pending",
+        appliedAt: serverTimestamp(),
+        formData: {
+          name: formData.name,
+          nic: formData.nic,
+          workPlace: formData.workPlace,
+          birthday: formData.birthday,
+          depot: formData.depot,
+          route: formData.route,
+          days: formData.days,
+          passMonth: formData.passMonth,
+          photoURL,
+          paymentSlipURL: slipURL,
+        },
+      });
 
-            showNotification("Application submitted successfully!", "success");
-            // setFormData({
-            //     name: "",
-            //     school: "",
-            //     regNo: "",
-            //     grade: "",
-            //     birthday: null,
-            //     depot: "",
-            //     route: "",
-            //     days: "",
-            //     photo: null,
-            //     paymentSlip: null,
-            // });
-            navigate('/')
-        } catch (error) {
-            console.error("Error submitting application:", error);
-            showNotification("Failed to submit application.", "error");
-        }
+      showNotification("Application submitted successfully!", "success");
+      // setFormData({
+      //     name: "",
+      //     school: "",
+      //     regNo: "",
+      //     grade: "",
+      //     birthday: null,
+      //     depot: "",
+      //     route: "",
+      //     days: "",
+      //     photo: null,
+      //     paymentSlip: null,
+      // });
+      navigate("/");
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      showNotification("Failed to submit application.", "error");
+    }
 
-        setLoading(false);
-    };
+    setLoading(false);
+  };
 
+  return (
+    <div>
+      <MenuBar />
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "#f5f5f5",
+          p: 3,
+        }}
+      >
+        <Paper
+          elevation={6}
+          sx={{ maxWidth: 600, width: "100%", p: 4, borderRadius: 3 }}
+        >
+          <Typography variant="h5" fontWeight={700} textAlign="center" mb={3}>
+            Adults Season Pass Application
+          </Typography>
 
-    return (
-        <div>
-            <MenuBar />
-            <Box
-                sx={{
-                    minHeight: "100vh",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    bgcolor: "#f5f5f5",
-                    p: 3,
-                }}
-            >
-                <Paper
-                    elevation={6}
-                    sx={{ maxWidth: 600, width: "100%", p: 4, borderRadius: 3 }}
+          <form onSubmit={handleSubmit}>
+            <div className="double-inputs">
+              <TextField
+                fullWidth
+                label="Full Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="NIC No"
+                name="nic"
+                value={formData.nic}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="double-inputs">
+              <TextField
+                fullWidth
+                label="Work Place Name & Address"
+                name="workPlace"
+                value={formData.workPlace}
+                onChange={handleChange}
+                required
+              />
+
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Birthday"
+                  value={formData.birthday}
+                  onChange={(newValue) =>
+                    setFormData((prev) => ({ ...prev, birthday: newValue }))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} fullWidth required />
+                  )}
+                />
+              </LocalizationProvider>
+            </div>
+
+            <div className="double-inputs">
+              <TextField
+                fullWidth
+                label="Route Name"
+                name="route"
+                value={formData.route}
+                onChange={handleChange}
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="Depot Name"
+                name="depot"
+                value={formData.depot}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="double-inputs">
+              <FormControl fullWidth required>
+                <InputLabel>Days</InputLabel>
+                <Select
+                  name="days"
+                  value={formData.days}
+                  onChange={handleChange}
+                  label="Days"
                 >
-                    <Typography variant="h5" fontWeight={700} textAlign="center" mb={3}>
-                        Adults Season Pass Application
-                    </Typography>
+                  <MenuItem value={20}>20 Days</MenuItem>
+                  <MenuItem value={30}>30 Days</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
 
-                    <form onSubmit={handleSubmit}>
+            <Divider>
+              <Typography fontSize={"small"} color="grey">
+                For which month is the pass being applied?
+              </Typography>
+            </Divider>
 
-                        <div className="double-inputs">
-                            <TextField
-                                fullWidth
-                                label="Full Name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
+            <div className="double-inputs" style={{ marginTop: "16px" }}>
+              <FormControl fullWidth required>
+                <InputLabel>Month</InputLabel>
+                <Select
+                  name="passMonth"
+                  value={formData.passMonth}
+                  onChange={handleChange}
+                  label="Month"
+                >
+                  {(() => {
+                    const currentMonth = new Date().getMonth(); // 0-indexed
+                    const months = [
+                      "January",
+                      "February",
+                      "March",
+                      "April",
+                      "May",
+                      "June",
+                      "July",
+                      "August",
+                      "September",
+                      "October",
+                      "November",
+                      "December",
+                    ];
+                    return Array.from({ length: 3 }, (_, i) => {
+                      const monthIndex = (currentMonth + i) % 12;
+                      return (
+                        <MenuItem key={monthIndex} value={monthIndex + 1}>
+                          {months[monthIndex]}
+                        </MenuItem>
+                      );
+                    });
+                  })()}
+                </Select>
+              </FormControl>
+            </div>
 
-                            <TextField
-                                fullWidth
-                                label="NIC No"
-                                name="nic"
-                                value={formData.nic}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+            >
+              Upload NIC Photo
+              <input
+                type="file"
+                hidden
+                name="photo"
+                accept="image/*"
+                onChange={handleChange}
+              />
+            </Button>
+            {formData.photo ? (
+              <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
+                ✅ {formData.photo.name}
+              </Typography>
+            ) : (
+              <Typography variant="body2" mt={1} color="error" mb={2}>
+                * Student photo is required
+              </Typography>
+            )}
 
-                        <div className="double-inputs">
-                            <TextField
-                                fullWidth
-                                label="Work Place Name & Address"
-                                name="workPlace"
-                                value={formData.workPlace}
-                                onChange={handleChange}
-                                required
-                            />
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+            >
+              Upload Payment Slip
+              <input
+                type="file"
+                hidden
+                name="paymentSlip"
+                accept="image/*,.pdf"
+                onChange={handleChange}
+              />
+            </Button>
 
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <DatePicker
+            {formData.paymentSlip ? (
+              <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
+                ✅ {formData.paymentSlip.name}
+              </Typography>
+            ) : (
+              <Typography variant="body2" mt={1} color="error" mb={2}>
+                * Payment slip is required
+              </Typography>
+            )}
 
-                                    label="Birthday"
-                                    value={formData.birthday}
-                                    onChange={(newValue) =>
-                                        setFormData((prev) => ({ ...prev, birthday: newValue }))
-                                    }
-                                    renderInput={(params) => (
-                                        <TextField {...params} fullWidth required />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </div>
-
-                        <div className="double-inputs">
-
-                            <TextField
-                                fullWidth
-                                label="Route Name"
-                                name="route"
-                                value={formData.route}
-                                onChange={handleChange}
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                label="Depot Name"
-                                name="depot"
-                                value={formData.depot}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="double-inputs">
-
-                            <FormControl fullWidth required>
-                                <InputLabel>Days</InputLabel>
-                                <Select
-                                    name="days"
-                                    value={formData.days}
-                                    onChange={handleChange}
-                                    label="Days"
-                                >
-                                    <MenuItem value={20}>20 Days</MenuItem>
-                                    <MenuItem value={30}>30 Days</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </div>
-
-                        <Button
-                            variant="outlined"
-                            component="label"
-                            fullWidth
-                            sx={{ borderRadius: 2 }}
-                        >
-                            Upload NIC Photo
-                            <input
-                                type="file"
-                                hidden
-                                name="photo"
-                                accept="image/*"
-                                onChange={handleChange}
-                            />
-                        </Button>
-                        {formData.photo ? (
-                            <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
-                                ✅ {formData.photo.name}
-                            </Typography>
-                        ) : (
-                            <Typography variant="body2" mt={1} color="error" mb={2}>
-                                * Student photo is required
-                            </Typography>
-                        )}
-
-                        <Button
-                            variant="outlined"
-                            component="label"
-                            fullWidth
-                            sx={{ borderRadius: 2 }}
-                        >
-                            Upload Payment Slip
-                            <input
-                                type="file"
-                                hidden
-                                name="paymentSlip"
-                                accept="image/*,.pdf"
-                                onChange={handleChange}
-                            />
-
-                        </Button>
-
-                        {formData.paymentSlip ? (
-                            <Typography variant="body2" mt={1} color="text.secondary" mb={2}>
-                                ✅ {formData.paymentSlip.name}
-                            </Typography>
-                        ) : (
-                            <Typography variant="body2" mt={1} color="error" mb={2}>
-                                * Payment slip is required
-                            </Typography>
-                        )}
-
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            sx={{ mt: 2, py: 1.3, borderRadius: 2 }}
-                            disabled={loading}
-                        >
-                            {loading ? "Submitting..." : "Submit Application"}
-                        </Button>
-
-                    </form>
-                </Paper>
-            </Box>
-            <Footer />
-        </div>
-    );
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2, py: 1.3, borderRadius: 2 }}
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Submit Application"}
+            </Button>
+          </form>
+        </Paper>
+      </Box>
+      <Footer />
+    </div>
+  );
 };
 
 export default Adults;

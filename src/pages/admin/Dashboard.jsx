@@ -117,11 +117,11 @@ const Dashboard = () => {
                       </Typography>
                     }
                     secondary={
-                      <>
+                      <div>
                         <Typography variant="body2" color="text.secondary">
                           {complaint.date} — {complaint.message}
                         </Typography>
-                      </>
+                      </div>
                     }
                   />
                 </ListItem>

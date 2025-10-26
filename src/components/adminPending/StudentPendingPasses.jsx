@@ -12,9 +12,9 @@ import {
   Box,
 } from "@mui/material";
 
-import { getStudentApprovedApplications } from "../../services/firebasePassService";
+import { getStudentPendingApplications } from "../../services/firebasePassService";
 
-const StudentIssuedPasses = () => {
+const StudentPendingPasses = () => {
   const [pendingPasses, setPendingPasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +22,7 @@ const StudentIssuedPasses = () => {
 
   useEffect(() => {
     const fetchPasses = async () => {
-      const pendingApps = await getStudentApprovedApplications();
+      const pendingApps = await getStudentPendingApplications();
       setPendingPasses(pendingApps);
       setLoading(false);
     };
@@ -33,20 +33,22 @@ const StudentIssuedPasses = () => {
     <div>
       <Box>
         {loading ? (
-          <Box>
+          <Box >
             <CircularProgress />
-            <Typography>Loading approved passes...</Typography>
+            <Typography>Loading your pending passes...</Typography>
           </Box>
         ) : pendingPasses.length === 0 ? (
           <Typography color="text.secondary">
-            No approved applications found.
+            No pending applications found.
           </Typography>
         ) : (
           <List sx={{ bgcolor: "#fff", borderRadius: 2, boxShadow: 2 }}>
             {pendingPasses.map((pass, index) => (
               <React.Fragment key={pass.id}>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={() => navigate(`${pass.id}`)}>
+                  <ListItemButton
+                    onClick={() => navigate(`${pass.id}`)}
+                  >
                     <ListItemText
                       primary={
                         <Typography variant="h6" fontWeight={600}>
@@ -64,9 +66,9 @@ const StudentIssuedPasses = () => {
                             fontStyle="italic"
                             color="text.secondary"
                           >
-                            📅 Approved on:{" "}
+                            📅 Submitted on:{" "}
                             {pass.appliedAt?.toDate
-                              ? pass.approvedAt.toDate().toLocaleDateString()
+                              ? pass.appliedAt.toDate().toLocaleDateString()
                               : "Unknown"}
                           </Typography>
                         </>
@@ -85,4 +87,4 @@ const StudentIssuedPasses = () => {
   );
 };
 
-export default StudentIssuedPasses;
+export default StudentPendingPasses;

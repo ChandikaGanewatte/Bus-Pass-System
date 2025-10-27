@@ -14,6 +14,15 @@ import {
   useTheme,
 } from "@mui/material";
 
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+} from "@mui/lab";
+
 import MenuBarAdmin from "../../components/MenuBarAdmin";
 import Footer from "../../components/Footer";
 import { getApplicationDetails } from "../../services/firebasePassService";
@@ -219,28 +228,75 @@ const IssuedPassDetails = () => {
                   </Typography>
                 </Box>
 
-                <Box display={"flex"} flexDirection={"row"}>
-                  <Typography variant="subtitle1" mr={4}>
-                    Applied At:{" "}
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    📅
-                    {application.appliedAt?.toDate
-                      ? application.appliedAt.toDate().toLocaleString()
-                      : "Unknown"}
-                  </Typography>
-                </Box>
-                <Box display={"flex"} flexDirection={"row"}>
-                  <Typography variant="subtitle1" mr={2}>
-                    Approved At:{" "}
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    📅
-                    {application.appliedAt?.toDate
-                      ? application.approvedAt.toDate().toLocaleString()
-                      : "Unknown"}
-                  </Typography>
-                </Box>
+                <Timeline sx={{ mt: 2 }}>
+                  {/* Applied */}
+                  <TimelineItem>
+                    <TimelineSeparator>
+                      <TimelineDot color="primary" />
+                      <TimelineConnector />
+                    </TimelineSeparator>
+                    <TimelineContent
+                      sx={{
+                        minWidth: "220px", // ✅ More content width
+                        textAlign: "left", // ✅ Always left aligned
+                        pr: 2, // ✅ Add right padding for spacing
+                      }}
+                    >
+                      <Typography fontWeight="bold">Applied At</Typography>
+                      <Typography variant="body2" noWrap>
+                        📅{" "}
+                        {application.appliedAt?.toDate
+                          ? application.appliedAt.toDate().toLocaleString()
+                          : "Unknown"}
+                      </Typography>
+                    </TimelineContent>
+                  </TimelineItem>
+
+                  {/* Approved */}
+                  <TimelineItem>
+                    <TimelineSeparator>
+                      <TimelineDot color="success" />
+                      <TimelineConnector />
+                    </TimelineSeparator>
+                    <TimelineContent
+                      sx={{
+                        minWidth: "220px",
+                        textAlign: "left",
+                        pr: 2,
+                      }}
+                    >
+                      <Typography fontWeight="bold">Approved At</Typography>
+                      <Typography variant="body2" noWrap>
+                        📅{" "}
+                        {application.approvedAt?.toDate
+                          ? application.approvedAt.toDate().toLocaleString()
+                          : "Pending..."}
+                      </Typography>
+                    </TimelineContent>
+                  </TimelineItem>
+
+                  {/* Expiry */}
+                  <TimelineItem>
+                    <TimelineSeparator>
+                      <TimelineDot color="error" />
+                    </TimelineSeparator>
+                    <TimelineContent
+                      sx={{
+                        minWidth: "220px",
+                        textAlign: "left",
+                        pr: 2,
+                      }}
+                    >
+                      <Typography fontWeight="bold">Expire Date</Typography>
+                      <Typography variant="body2" noWrap>
+                        📅{" "}
+                        {application.expiryDate?.toDate
+                          ? application.expiryDate.toDate().toLocaleDateString()
+                          : "Unknown"}
+                      </Typography>
+                    </TimelineContent>
+                  </TimelineItem>
+                </Timeline>
               </Box>
 
               {/* Right – QR Code */}

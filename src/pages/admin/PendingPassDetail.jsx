@@ -10,6 +10,7 @@ import {
   Link,
   Divider,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 
 import MenuBarAdmin from "../../components/MenuBarAdmin";
@@ -24,6 +25,7 @@ const PendingPassDetails = () => {
   const { id } = useParams();
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const { showNotification } = useNotification();
 
@@ -59,16 +61,24 @@ const PendingPassDetails = () => {
       </Box>
     );
 
-const handleApprove = async () => {
-  const qrURL = await approvePassApplicationWithQR(application);
-  if (qrURL) {
-    showNotification("Application Approved and QR Code Generated!", "success");
-    setApplication((prev) => ({ ...prev, status: "approved", qrCodeURL: qrURL }));
-  } else {
-    showNotification("Failed to approve application.", "error");
-  }
-};
-
+  const handleApprove = async () => {
+    setSubmitting(true);
+    const qrURL = await approvePassApplicationWithQR(application);
+    if (qrURL) {
+      showNotification(
+        "Application Approved and QR Code Generated!",
+        "success"
+      );
+      setApplication((prev) => ({
+        ...prev,
+        status: "approved",
+        qrCodeURL: qrURL,
+      }));
+    } else {
+      showNotification("Failed to approve application.", "error");
+    }
+    setSubmitting(false);
+  };
 
   const handleReject = async () => {
     // Reject logic
@@ -112,17 +122,18 @@ const handleApprove = async () => {
               <Typography variant="subtitle1" mr={6}>
                 Status:{" "}
               </Typography>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  bgcolor: "orange",
-                  color: "white",
-                  borderRadius: 2,
-                  px: 2,
-                }}
-              >
-                {application.status}
-              </Typography>
+<Typography
+  variant="subtitle1"
+  sx={{
+    bgcolor: application.status === "approved" ? "green" : "orange",
+    color: "white",
+    borderRadius: 2,
+    px: 2,
+    textTransform: "capitalize", // optional → formats text like "Approved"
+  }}
+>
+  {application.status}
+</Typography>
             </Box>
 
             <Box display={"flex"} flexDirection={"row"}>
@@ -285,11 +296,22 @@ const handleApprove = async () => {
           <Button
             variant="contained"
             color="success"
-            sx={{ minWidth: 120 }}
+            sx={{
+              minWidth: 120,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             onClick={handleApprove}
+            disabled={submitting} // prevents double click
           >
-            Approve
+            {submitting ? (
+              <CircularProgress size={24} /> // spinner
+            ) : (
+              "Approve"
+            )}
           </Button>
+
           <Button
             variant="contained"
             color="error"

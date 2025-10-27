@@ -13,7 +13,7 @@ import {
 import { ref, getDownloadURL, uploadString } from "firebase/storage";
 import QRCode from "qrcode";
 
-// get all pass applicatons - admin ----------------------------------------
+// get all student pass applicatons - admin ----------------------------------------
 export const getStudentPendingApplications = async () => {
   try {
     const q = query(
@@ -53,14 +53,13 @@ export const approvePassApplicationWithQR = async (application) => {
   try {
     const docRef = doc(db, "applications", application.id);
 
-    // Extract year and month from formData.passPeriod ("YYYY-M")
-    const [year, month] = application.formData.passPeriod
-      ? application.formData.passPeriod.split("-").map(Number)
-      : [new Date().getFullYear(), new Date().getMonth() + 1];
+    // Get applied month from application data
+    const month = application.formData.passMonth; // 1-12
+    const year = new Date().getFullYear(); // You can update later if year selection added
 
-    // Get last day of the month
-    const expiryDateObj = new Date(year, month, 0); // day=0 gives last day of previous month, so month is next month index
-    const expiryDate = Timestamp.fromDate(expiryDateObj);
+    // ✅ Calculate last day of selected month
+    const lastDayOfMonth = new Date(year, month, 0); // month index auto handles end date
+    const expiryDate = Timestamp.fromDate(lastDayOfMonth);
 
     // Prepare QR code data
     const qrData = JSON.stringify({
@@ -95,7 +94,7 @@ export const approvePassApplicationWithQR = async (application) => {
   }
 };
 
-// get all pass applicatons - admin -----------------------------------------
+// get all approved student pass applicatons - admin --------------------------------
 export const getStudentApprovedApplications = async () => {
   try {
     const q = query(

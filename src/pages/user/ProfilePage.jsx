@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -34,6 +35,8 @@ const ProfilePage = () => {
   const { showNotification } = useNotification();
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: currentUser?.name || "",
@@ -134,6 +137,7 @@ const ProfilePage = () => {
               variant="contained"
               color="success"
               startIcon={<DownloadIcon />}
+              onClick={()=> navigate('/bus_passes')}
               sx={{
                 borderRadius: 2,
                 fontWeight: 600,

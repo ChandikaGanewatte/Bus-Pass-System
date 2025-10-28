@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https:// ChandikaGanewatte.github.io/ Bus-Pass-System ",
+  "homepage": "https://ChandikaGanewatte.github.io/Bus-Pass-System ",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

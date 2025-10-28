@@ -23,7 +23,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import MenuBarAdmin from "../../components/MenuBarAdmin";
 import Footer from "../../components/Footer";
-import { getStudentApprovedApplications } from "../../services/firebasePassService";
+import { getStudentApprovedApplications, getUniStudentApprovedApplications } from "../../services/firebasePassService";
 import {
   getComplaints,
   updateComplaintStatus,
@@ -32,6 +32,7 @@ import { useNotification } from "../../context/NotificationContext";
 
 const Dashboard = () => {
   const [pendingStudentPasses, setPendingStudentPasses] = useState(0);
+  const [pendingUniStudentPasses, setPendingUniStudentPasses] = useState(0);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -41,8 +42,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchPasses = async () => {
-      const pendingApps = await getStudentApprovedApplications();
-      setPendingStudentPasses(pendingApps.length);
+      const pendingStdntApps = await getStudentApprovedApplications();
+      const pendingUniStdntApps = await getUniStudentApprovedApplications();
+      setPendingStudentPasses(pendingStdntApps.length);
+      setPendingUniStudentPasses(pendingUniStdntApps.length);
       setLoading(false);
     };
     fetchPasses();
@@ -95,7 +98,7 @@ const Dashboard = () => {
     },
     {
       title: "University Passes",
-      count: 312,
+      count: pendingUniStudentPasses,
       icon: <BadgeIcon sx={{ fontSize: 40, color: "#2e7d32" }} />,
     },
     {
@@ -176,6 +179,7 @@ const Dashboard = () => {
                 No complaints to display.
               </Typography>
             ) : (
+              <Box sx={{ maxHeight: 400, overflowY: "auto" }}> 
               <List>
                 {complaints.map((complaint) => (
                   <ListItem
@@ -233,6 +237,7 @@ const Dashboard = () => {
                   </ListItem>
                 ))}
               </List>
+              </Box>
             )}
 
             <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>

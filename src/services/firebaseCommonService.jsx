@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-// submit complains
+// submit complains -----------------------------------------
 export const submitComplaint = async ({ userId, depot, reason, message }) => {
   try {
     const complaintsRef = collection(db, "complaints");
@@ -30,7 +30,7 @@ export const submitComplaint = async ({ userId, depot, reason, message }) => {
   }
 };
 
-// get complains
+// get complains ---------------------------------------------
 export const getComplaints = async () => {
   try {
     const complaintsRef = collection(db, "complaints");
@@ -49,7 +49,7 @@ export const getComplaints = async () => {
   }
 };
 
-// update complain
+// update complain --------------------------------------------
 export const updateComplaintStatus = async (complaintId, newStatus) => {
   try {
     const complaintRef = doc(db, "complaints", complaintId);
@@ -64,3 +64,5 @@ export const updateComplaintStatus = async (complaintId, newStatus) => {
     return { success: false, message: error.message };
   }
 };
+
+// delete complain --------------------------------------------

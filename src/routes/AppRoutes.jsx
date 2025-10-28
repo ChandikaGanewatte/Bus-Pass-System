@@ -21,6 +21,7 @@ import IssuedPasses from "../pages/admin/IssuedPasses";
 import PendingPasses from "../pages/admin/PendingPasses";
 import PendingPassDetails from "../pages/admin/PendingPassDetail";
 import IssuedPassDetails from "../pages/admin/IssuedPassDetails";
+import ManageRoutes from "../pages/admin/ManageRoutes";
 
 const AppRoutes = () => {
     return (
@@ -69,6 +70,7 @@ const AppRoutes = () => {
             <Route path="/admin/pending_passes" element={<PendingPasses />} />
             <Route path="/admin/pending_passes/:id" element={<PendingPassDetails />} />
             <Route path="/admin/issued_passes/:id" element={<IssuedPassDetails />} />
+            <Route path="/admin/manage_routes" element={<ManageRoutes />} />
         </Routes>
     );
 };

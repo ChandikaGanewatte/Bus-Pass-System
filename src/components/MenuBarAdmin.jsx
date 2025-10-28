@@ -54,6 +54,7 @@ const MenuBarAdmin = () => {
     { text: "Home", path: "/admin" },
     { text: "Issued Passes", path: "/admin/issued_passes" },
     { text: "Pending Passes", path: "/admin/pending_passes" },
+    { text: "Routes", path: "/admin/manage_routes" },
   ];
 
   const handleLogout = async () => {

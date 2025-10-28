@@ -30,6 +30,23 @@ export const getStudentPendingApplications = async () => {
   }
 };
 
+// get all uni student pass applicatons - admin ----------------------------------------
+export const getUniStudentPendingApplications = async () => {
+  try {
+    const q = query(
+      collection(db, "applications"),
+      where("status", "==", "pending"),
+      where("userType", "==", "uni_student")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error getting pending applications:", error);
+    return [];
+  }
+};
+
 // get a pass application details - admin ---------------------------------
 export const getApplicationDetails = async (docId) => {
   try {
@@ -111,3 +128,19 @@ export const getStudentApprovedApplications = async () => {
   }
 };
 
+// get all approved uni student pass applicatons - admin --------------------------------
+export const getUniStudentApprovedApplications = async () => {
+  try {
+    const q = query(
+      collection(db, "applications"),
+      where("status", "==", "approved"),
+      where("userType", "==", "uni_student")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error getting approved applications:", error);
+    return [];
+  }
+};

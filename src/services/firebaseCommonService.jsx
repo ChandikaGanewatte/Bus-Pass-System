@@ -64,3 +64,5 @@ export const updateComplaintStatus = async (complaintId, newStatus) => {
     return { success: false, message: error.message };
   }
 };
+
+// delete complain --------------------------------------------

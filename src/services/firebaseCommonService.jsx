@@ -65,4 +65,37 @@ export const updateComplaintStatus = async (complaintId, newStatus) => {
   }
 };
 
-// delete complain --------------------------------------------
+// get routes --------------------------------------------
+export const getBusRoutes = async () => {
+  try {
+    const busRoutesRef = collection(db, "routes");
+    const q = query(busRoutesRef, orderBy("routeNo", "asc")); // or desc
+
+    const querySnapshot = await getDocs(q);
+    const routes = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return { success: true, data: routes };
+  } catch (error) {
+    console.error("Error fetching routes:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+
+// upload route bulk -------------------------------------------
+export const uploadRoutesBulk = async (routes) => {
+  try {
+    const routesRef = collection(db, "routes");
+
+    const uploads = routes.map((route) => addDoc(routesRef, route));
+    await Promise.all(uploads);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Bulk upload failed:", error);
+    return { success: false, message: error.message };
+  }
+};

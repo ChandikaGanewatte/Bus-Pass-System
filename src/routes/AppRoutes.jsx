@@ -5,7 +5,7 @@ import RegisterPage from "../pages/RegisterPage";
 import LoginPage from "../pages/LoginPage";
 import HomePage from "../pages/HomePage";
 import AboutUs from "../pages/AboutUs";
-import ContactUs from "../pages/contactUs";
+import ContactUs from "../pages/ContactUs";
 import ComplainsPage from "../pages/ComplainsPage";
 import TermsAndConditions from "../pages/TermsAndConditions";
 
@@ -14,7 +14,7 @@ import UniStudents from "../pages/apply_pass/UniStudents";
 import Adults from "../pages/apply_pass/Adults";
 
 import ProfilePage from "../pages/user/ProfilePage";
-import BusPassPage from "../pages/user/busPassPage";
+import BusPassPage from "../pages/user/BusPassPage";
 
 import Dashboard from "../pages/admin/Dashboard";
 import IssuedPasses from "../pages/admin/IssuedPasses";

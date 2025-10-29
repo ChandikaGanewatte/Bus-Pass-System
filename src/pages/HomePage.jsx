@@ -116,6 +116,9 @@ const HomePage = () => {
                                 <Button size="small" variant="contained" color="secondary" onClick={() => navigate("/bus_passes/apply_pass_students")}>
                                     Apply Now
                                 </Button>
+                                            <Button size="small" variant="contained" color="secondary" onClick={() => navigate("/admin")}>
+                                    Admin
+                                </Button>
                             </CardActions>
                         </Card>
 

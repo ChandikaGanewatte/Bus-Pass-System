@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PriveteRoute";
 
 import RegisterPage from "../pages/RegisterPage";
-import LoginPage from "../pages/loginPage";
+import LoginPage from "../pages/LoginPage";
 import HomePage from "../pages/HomePage";
 import AboutUs from "../pages/AboutUs";
 import ContactUs from "../pages/contactUs";

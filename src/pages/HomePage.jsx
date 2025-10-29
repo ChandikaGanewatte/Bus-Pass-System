@@ -109,7 +109,7 @@ const HomePage = () => {
                                     Student Season Pass
                                 </Typography>
                                 <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-                                    Click here for <a href="pass_1_details">more details.</a>
+                                    Click here for <a href="student_info">more details.</a>
                                 </Typography>
                             </CardContent>
                             <CardActions>
@@ -137,7 +137,7 @@ const HomePage = () => {
                                     University Student Season Pass
                                 </Typography>
                                 <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-                                    Click here for <a href="pass_2_details">more details.</a>
+                                    Click here for <a href="university_info">more details.</a>
                                 </Typography>
                             </CardContent>
                             <CardActions>
@@ -162,7 +162,7 @@ const HomePage = () => {
                                     Adult Season Pass
                                 </Typography>
                                 <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-                                    Click here for <a href="pass_3_details">more details.</a>
+                                    Click here for <a href="adult_info">more details.</a>
                                 </Typography>
                             </CardContent>
                             <CardActions>

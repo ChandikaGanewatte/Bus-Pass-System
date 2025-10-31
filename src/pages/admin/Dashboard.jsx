@@ -23,7 +23,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import MenuBarAdmin from "../../components/MenuBarAdmin";
 import Footer from "../../components/Footer";
-import { getStudentApprovedApplications, getUniStudentApprovedApplications } from "../../services/firebasePassService";
+import { getStudentApprovedApplications, getUniStudentApprovedApplications, getAdultApprovedApplications } from "../../services/firebasePassService";
 import {
   getComplaints,
   updateComplaintStatus,
@@ -31,8 +31,9 @@ import {
 import { useNotification } from "../../context/NotificationContext";
 
 const Dashboard = () => {
-  const [pendingStudentPasses, setPendingStudentPasses] = useState(0);
-  const [pendingUniStudentPasses, setPendingUniStudentPasses] = useState(0);
+  const [approvedStudentPasses, setApprovedStudentPasses] = useState(0);
+  const [approvedUniStudentPasses, setApprovedUniStudentPasses] = useState(0);
+  const [approvedAdultPasses, setApprovedAdultPasses] = useState (0)
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -42,10 +43,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchPasses = async () => {
-      const pendingStdntApps = await getStudentApprovedApplications();
-      const pendingUniStdntApps = await getUniStudentApprovedApplications();
-      setPendingStudentPasses(pendingStdntApps.length);
-      setPendingUniStudentPasses(pendingUniStdntApps.length);
+      const approvedStdntApps = await getStudentApprovedApplications();
+      const approvedUniStdntApps = await getUniStudentApprovedApplications();
+      const approvedAdultPasses = await getAdultApprovedApplications();
+      setApprovedStudentPasses(approvedStdntApps.length);
+      setApprovedUniStudentPasses(approvedUniStdntApps.length);
+setApprovedAdultPasses(approvedAdultPasses.length)
       setLoading(false);
     };
     fetchPasses();
@@ -93,17 +96,17 @@ const Dashboard = () => {
   const stats = [
     {
       title: "Student Passes",
-      count: pendingStudentPasses,
+      count: approvedStudentPasses,
       icon: <SchoolIcon sx={{ fontSize: 40, color: "#1976d2" }} />,
     },
     {
       title: "University Passes",
-      count: pendingUniStudentPasses,
+      count: approvedUniStudentPasses,
       icon: <BadgeIcon sx={{ fontSize: 40, color: "#2e7d32" }} />,
     },
     {
       title: "Adult Passes",
-      count: 698,
+      count: approvedAdultPasses,
       icon: <DirectionsBusIcon sx={{ fontSize: 40, color: "#d32f2f" }} />,
     },
   ];

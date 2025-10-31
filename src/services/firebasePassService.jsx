@@ -162,3 +162,20 @@ export const getUniStudentApprovedApplications = async () => {
     return [];
   }
 };
+
+// get all approved uni student pass applicatons - admin --------------------------------
+export const getAdultApprovedApplications = async () => {
+  try {
+    const q = query(
+      collection(db, "applications"),
+      where("status", "==", "approved"),
+      where("userType", "==", "adult")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error getting approved applications:", error);
+    return [];
+  }
+};

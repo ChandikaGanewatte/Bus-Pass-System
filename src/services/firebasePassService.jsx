@@ -47,6 +47,24 @@ export const getUniStudentPendingApplications = async () => {
   }
 };
 
+// get all uni student pass applicatons - admin ----------------------------------------
+export const getAdultsPendingApplications = async () => {
+  try {
+    const q = query(
+      collection(db, "applications"),
+      where("status", "==", "pending"),
+      where("userType", "==", "adult")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error getting pending applications:", error);
+    return [];
+  }
+};
+
+
 // get a pass application details - admin ---------------------------------
 export const getApplicationDetails = async (docId) => {
   try {

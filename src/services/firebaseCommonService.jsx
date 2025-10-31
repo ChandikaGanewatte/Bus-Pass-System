@@ -5,7 +5,10 @@ import {
   orderBy,
   getDocs,
   query,
-  doc, updateDoc
+  doc,
+  updateDoc,
+  where,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
@@ -84,7 +87,6 @@ export const getBusRoutes = async () => {
   }
 };
 
-
 // upload route bulk -------------------------------------------
 export const uploadRoutesBulk = async (routes) => {
   try {
@@ -98,4 +100,40 @@ export const uploadRoutesBulk = async (routes) => {
     console.error("Bulk upload failed:", error);
     return { success: false, message: error.message };
   }
+};
+
+// Add notification ---------------------------------------------------------
+export const sendNotification = async (userId, title, message, type = "info") => {
+  try {
+    await addDoc(collection(db, "notifications"), {
+      userId,
+      title,
+      message,
+      type,
+      isRead: false,
+      createdAt: serverTimestamp(),
+    });
+    console.log("Notification sent to user:", userId);
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+// Listen for user's notifications --------------------------------------------
+export const listenToUserNotifications = (userId, callback) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc")
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const notifications = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(notifications);
+  });
 };

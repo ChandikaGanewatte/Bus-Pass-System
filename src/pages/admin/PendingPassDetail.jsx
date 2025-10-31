@@ -20,6 +20,8 @@ import {
   getApplicationDetails,
   approvePassApplicationWithQR,
 } from "../../services/firebasePassService";
+import { sendNotification } from "../../services/firebaseCommonService";
+import { updatePassApplicationStatus } from "../../services/firebasePassService";
 
 const PendingPassDetails = () => {
   const { id } = useParams();
@@ -65,6 +67,13 @@ const PendingPassDetails = () => {
     setSubmitting(true);
     const qrURL = await approvePassApplicationWithQR(application);
     if (qrURL) {
+      await sendNotification(
+        application.userId,
+        "Pass Approved 🎉",
+        "Your bus pass has been approved. You can now download it from your dashboard.",
+        "success"
+      );
+
       showNotification(
         "Application Approved and QR Code Generated!",
         "success"
@@ -81,7 +90,32 @@ const PendingPassDetails = () => {
   };
 
   const handleReject = async () => {
-    // Reject logic
+    setSubmitting(true);
+    try {
+      // Update status in Firestore
+      await updatePassApplicationStatus(application.id, "rejected");
+
+      // Send notification to the user
+      await sendNotification(
+        application.userId,
+        "Pass Rejected ❌",
+        "Your bus pass application has been rejected. Please contact support for more information.",
+        "error"
+      );
+
+      // Show temporary UI notification
+      showNotification("Application has been rejected.", "error");
+
+      // Update local state
+      setApplication((prev) => ({
+        ...prev,
+        status: "rejected",
+      }));
+    } catch (err) {
+      console.error("Failed to reject application:", err);
+      showNotification("Failed to reject application.", "error");
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -122,18 +156,19 @@ const PendingPassDetails = () => {
               <Typography variant="subtitle1" mr={6}>
                 Status:{" "}
               </Typography>
-<Typography
-  variant="subtitle1"
-  sx={{
-    bgcolor: application.status === "approved" ? "green" : "orange",
-    color: "white",
-    borderRadius: 2,
-    px: 2,
-    textTransform: "capitalize", // optional → formats text like "Approved"
-  }}
->
-  {application.status}
-</Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  bgcolor:
+                    application.status === "approved" ? "green" : "orange",
+                  color: "white",
+                  borderRadius: 2,
+                  px: 2,
+                  textTransform: "capitalize", // optional → formats text like "Approved"
+                }}
+              >
+                {application.status}
+              </Typography>
             </Box>
 
             <Box display={"flex"} flexDirection={"row"}>

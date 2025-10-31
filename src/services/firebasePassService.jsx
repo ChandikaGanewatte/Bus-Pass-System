@@ -129,6 +129,18 @@ export const approvePassApplicationWithQR = async (application) => {
   }
 };
 
+// update application status -----------------------------------------------------------
+export const updatePassApplicationStatus = async (appId, status) => {
+  try {
+    const docRef = doc(db, "applications", appId);
+    await updateDoc(docRef, { status });
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating application status:", error);
+    return { success: false, message: error.message };
+  }
+};
+
 // get all approved student pass applicatons - admin --------------------------------
 export const getStudentApprovedApplications = async () => {
   try {

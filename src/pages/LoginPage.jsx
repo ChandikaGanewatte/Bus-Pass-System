@@ -55,7 +55,7 @@ const LoginPage = () => {
 
                 // Redirect user based on role
                 if (userData.userType === "admin") {
-                    navigate("/admin/dashboard");
+                    navigate("/admin");
                     showNotification("Login Success!", "success");
                 } else {
                     navigate("/");

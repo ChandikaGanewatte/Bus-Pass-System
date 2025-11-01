@@ -26,6 +26,7 @@ import PendingPasses from "../pages/admin/PendingPasses";
 import PendingPassDetails from "../pages/admin/PendingPassDetail";
 import IssuedPassDetails from "../pages/admin/IssuedPassDetails";
 import ManageRoutes from "../pages/admin/ManageRoutes";
+import AdminRegisterPage from "../pages/admin/AdminRegisterPage";
 
 const AppRoutes = () => {
   return (
@@ -86,15 +87,71 @@ const AppRoutes = () => {
       />
 
       {/* ************************* ADMIN ROUTES ************************* */}
-      <Route path="/admin" element={<Dashboard />} />
-      <Route path="/admin/issued_passes" element={<IssuedPasses />} />
-      <Route path="/admin/pending_passes" element={<PendingPasses />} />
+      <Route path="/register/admin" element={<AdminRegisterPage />} />
+
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      {/* <Route path="/admin" element={<Dashboard />} /> */}
+
+      <Route
+        path="/admin/issued_passes"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <IssuedPasses />
+          </PrivateRoute>
+        }
+      />
+      {/* <Route path="/admin/issued_passes" element={<IssuedPasses />} /> */}
+
+      <Route
+        path="/admin/pending_passes"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <PendingPasses />
+          </PrivateRoute>
+        }
+      />
+
+      {/* <Route path="/admin/pending_passes" element={<PendingPasses />} /> */}
+
       <Route
         path="/admin/pending_passes/:id"
-        element={<PendingPassDetails />}
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <PendingPassDetails />
+          </PrivateRoute>
+        }
       />
-      <Route path="/admin/issued_passes/:id" element={<IssuedPassDetails />} />
-      <Route path="/admin/manage_routes" element={<ManageRoutes />} />
+      {/* <Route
+        path="/admin/pending_passes/:id"
+        element={<PendingPassDetails />}
+      /> */}
+
+      <Route
+        path="/admin/issued_passes/:id"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <IssuedPassDetails />
+          </PrivateRoute>
+        }
+      />
+      {/* <Route path="/admin/issued_passes/:id" element={<IssuedPassDetails />} /> */}
+
+      <Route
+        path="/admin/manage_routes"
+        element={
+          <PrivateRoute allowedRoles={["admin"]}>
+            <ManageRoutes />
+          </PrivateRoute>
+        }
+      />
+      {/* <Route path="/admin/manage_routes" element={<ManageRoutes />} /> */}
     </Routes>
   );
 };

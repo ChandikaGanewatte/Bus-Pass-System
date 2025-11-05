@@ -1,32 +1,60 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onRequest } = require("firebase-functions/v2/https");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 const logger = require("firebase-functions/logger");
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+initializeApp();
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+async function checkAndExpirePasses() {
+  const db = getFirestore();
+  const now = new Date();
+  const applicationsRef = db.collection("applications");
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  const snapshot = await applicationsRef.where("status", "==", "approved").get();
+  const batch = db.batch();
+  let expiredCount = 0;
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    if (data.expiryDate && data.expiryDate.toDate() < now) {
+      const appRef = applicationsRef.doc(doc.id);
+      batch.update(appRef, { status: "expired" });
+
+      // Add notification for the user
+      if (data.userId) {
+        const notifRef = db.collection("notifications").doc();
+        batch.set(notifRef, {
+          userId: data.userId,
+          message: "Your bus pass has expired.",
+          type: "expiry",
+          createdAt: new Date(),
+          read: false,
+        });
+      }
+
+      expiredCount++;
+    }
+  });
+
+  if (expiredCount > 0) {
+    await batch.commit();
+    logger.info(`✅ ${expiredCount} passes expired and notifications sent.`);
+  } else {
+    logger.info("ℹ️ No passes expired today.");
+  }
+
+  return null;
+}
+
+// Runs automatically every 24 hours
+exports.autoExpirePasses = onSchedule("every 24 hours", async (event) => {
+  logger.info("⏰ Running daily expiry + notification check...");
+  await checkAndExpirePasses();
+});
+
+// Run manually from browser (for testing)
+exports.manualExpireCheck = onRequest(async (req, res) => {
+  await checkAndExpirePasses();
+  res.send("✅ Manual expiry + notification check complete");
+});

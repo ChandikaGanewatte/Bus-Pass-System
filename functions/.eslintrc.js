@@ -1,12 +1,19 @@
 module.exports = {
   root: true,
   env: {
-    node: true,        // ✅ enables Node globals like require, module, exports
-    es2021: true,
+    node: true,
+    es2020: true,
   },
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 2020,
   },
-  extends: ["eslint:recommended"],
-  rules: {},
+  extends: [
+    "eslint:recommended",
+    "google",
+  ],
+  rules: {
+    "no-restricted-globals": ["error", "name", "length"],
+    "prefer-arrow-callback": "error",
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+  },
 };

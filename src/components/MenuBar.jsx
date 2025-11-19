@@ -125,11 +125,8 @@ const MenuBar = () => {
             </Typography>
           </Box>
 
-          {isMobile ? (
-            <IconButton edge="end" color="inherit" onClick={toggleDrawer(true)}>
-              <MenuIcon />
-            </IconButton>
-          ) : (
+          {/* Center menu when desktop */}
+          {!isMobile && (
             <Box
               sx={{
                 display: "flex",
@@ -151,18 +148,32 @@ const MenuBar = () => {
             </Box>
           )}
 
-          {currentUser && <NotificationBell userId={currentUser.uid} />}
+          {/* Right side icons */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {currentUser && <NotificationBell userId={currentUser.uid} />}
 
-          {!isMobile && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <IconButton color="inherit" onClick={() => navigate("/profile")}>
-                <Avatar alt="Profile" src="/static/images/avatar/1.jpg" />
+            {isMobile ? (
+              <IconButton
+                edge="end"
+                color="inherit"
+                onClick={toggleDrawer(true)}
+              >
+                <MenuIcon />
               </IconButton>
-              <IconButton color="inherit" onClick={handleLogout}>
-                <LogoutIcon />
-              </IconButton>
-            </Box>
-          )}
+            ) : (
+              <>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate("/profile")}
+                >
+                  <Avatar alt="Profile" src="/static/images/avatar/1.jpg" />
+                </IconButton>
+                <IconButton color="inherit" onClick={handleLogout}>
+                  <LogoutIcon />
+                </IconButton>
+              </>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 

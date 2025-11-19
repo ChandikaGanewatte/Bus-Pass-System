@@ -136,14 +136,6 @@ const HomePage = () => {
                 >
                   Apply Now
                 </Button>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => navigate("/admin")}
-                >
-                  Admin
-                </Button>
               </CardActions>
             </Card>
 

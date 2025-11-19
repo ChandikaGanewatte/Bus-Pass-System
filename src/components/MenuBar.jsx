@@ -66,6 +66,7 @@ const MenuBar = () => {
     { text: "Complains", path: "/complains" },
     { text: "Contact", path: "/contact_us" },
     { text: "About Us", path: "/about_us" },
+    { text: "Price Cal", path: "/price_cal" },
   ];
 
   const handleLogout = async () => {

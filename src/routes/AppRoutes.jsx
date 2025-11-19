@@ -7,6 +7,7 @@ import HomePage from "../pages/HomePage";
 import AboutUs from "../pages/AboutUs";
 import ContactUs from "../pages/ContactUs";
 import ComplainsPage from "../pages/ComplainsPage";
+import PriceCal from "../pages/PriceCal";
 import TermsAndConditions from "../pages/TermsAndConditions";
 
 import Students from "../pages/apply_pass/Students";
@@ -36,6 +37,7 @@ const AppRoutes = () => {
       <Route path="/about_us" element={<AboutUs />} />
       <Route path="/contact_us" element={<ContactUs />} />
       <Route path="/complains" element={<ComplainsPage />} />
+      <Route path="/price_cal" element={<PriceCal />} />
       <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/bus_passes" element={<BusPassPage />} />
       <Route path="/student_info" element={<StudentInfo />} />

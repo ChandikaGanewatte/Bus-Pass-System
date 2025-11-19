@@ -225,7 +225,7 @@ const Adults = () => {
                   label="Days"
                 >
                   <MenuItem value={20}>20 Days</MenuItem>
-                  <MenuItem value={30}>30 Days</MenuItem>
+                  <MenuItem value={24}>24 Days</MenuItem>
                 </Select>
               </FormControl>
             </div>

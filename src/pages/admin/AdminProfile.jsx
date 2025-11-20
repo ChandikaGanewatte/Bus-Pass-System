@@ -19,7 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
-import MenuBar from "../../components/MenuBar";
+import MenuBar from "../../components/MenuBarAdmin";
 
 import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";

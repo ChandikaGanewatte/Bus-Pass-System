@@ -22,6 +22,7 @@ import ProfilePage from "../pages/user/ProfilePage";
 import BusPassPage from "../pages/user/BusPassPage";
 
 import Dashboard from "../pages/admin/Dashboard";
+import AdminProfile from "../pages/admin/AdminProfile";
 import IssuedPasses from "../pages/admin/IssuedPasses";
 import PendingPasses from "../pages/admin/PendingPasses";
 import PendingPassDetails from "../pages/admin/PendingPassDetail";
@@ -90,6 +91,7 @@ const AppRoutes = () => {
 
       {/* ************************* ADMIN ROUTES ************************* */}
       <Route path="/register/admin" element={<AdminRegisterPage />} />
+      <Route path="/admin/admin_profile" element={<AdminProfile />} />
 
       <Route
         path="/admin"

@@ -151,7 +151,7 @@ const MenuBarAdmin = () => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <IconButton
                 color="inherit"
-                onClick={() => navigate("/admin/profile")}
+                onClick={() => navigate("/admin/admin_profile")}
               >
                 <Avatar alt="Profile" src="/static/images/avatar/1.jpg" />
               </IconButton>

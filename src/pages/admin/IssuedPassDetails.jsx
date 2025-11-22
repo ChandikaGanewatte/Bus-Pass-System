@@ -28,12 +28,18 @@ import Footer from "../../components/Footer";
 import { getApplicationDetails } from "../../services/firebasePassService";
 import jsPDF from "jspdf";
 
+import { updatePassApplicationStatus } from "../../services/firebasePassService";
+import { useNotification } from "../../context/NotificationContext";
+import { sendNotification } from "../../services/firebaseCommonService";
+
 const IssuedPassDetails = () => {
   const { id } = useParams();
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [holdPass, setHoldPass] = useState(false);
+  const {showNotification} = useNotification();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -170,6 +176,64 @@ const IssuedPassDetails = () => {
         <Typography variant="h6">Application not found</Typography>
       </Box>
     );
+
+     const handleHold = async () => {
+        setHoldPass(true);
+        try {
+          // Update status in Firestore
+          await updatePassApplicationStatus(application.id, "hold");
+    
+          // Send notification to the user
+          await sendNotification(
+            application.userId,
+            "Pass Hold ❌",
+            "Your bus pass application has been holded. Please contact support for more information.",
+            "error"
+          );
+    
+          // Show temporary UI notification
+          showNotification("Application has been holded.", "success");
+    
+          // Update local state
+          setApplication((prev) => ({
+            ...prev,
+            status: "rejected",
+          }));
+        } catch (err) {
+          console.error("Failed to reject application:", err);
+          showNotification("Failed to reject application.", "error");
+        }
+        setHoldPass(false);
+      };
+
+           const handleCancel = async () => {
+        
+        try {
+          // Update status in Firestore
+          await updatePassApplicationStatus(application.id, "canceled");
+    
+          // Send notification to the user
+          await sendNotification(
+            application.userId,
+            "Pass Canceled ❌",
+            "Your bus pass application has been canceled. Please contact support for more information.",
+            "error"
+          );
+    
+          // Show temporary UI notification
+          showNotification("Application has been canceled.", "success");
+    
+          // Update local state
+          setApplication((prev) => ({
+            ...prev,
+            status: "rejected",
+          }));
+        } catch (err) {
+          console.error("Failed to reject application:", err);
+          showNotification("Failed to reject application.", "error");
+        }
+        
+      };
 
   return (
     <Box>
@@ -481,10 +545,10 @@ const IssuedPassDetails = () => {
             mt: 2,
           }}
         >
-          <Button variant="contained" color="success" sx={{ minWidth: 120 }}>
+          <Button variant="contained" color="success" sx={{ minWidth: 120 }} onClick={handleHold}>
             Hold
           </Button>
-          <Button variant="contained" color="error" sx={{ minWidth: 120 }}>
+          <Button variant="contained" color="error" sx={{ minWidth: 120 }} onClick={handleCancel}>
             Cancel
           </Button>
         </Box>

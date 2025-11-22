@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -25,7 +25,7 @@ import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { auth, db } from "../../firebase/config";
 import { deleteUser, updateProfile } from "firebase/auth";
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { useNotification } from "../../context/NotificationContext";
 
 const ProfilePage = () => {
@@ -43,6 +43,26 @@ const ProfilePage = () => {
     phone: currentUser?.phone || "",
     address: currentUser?.address || "",
   });
+
+  useEffect(() => {
+  const fetchUserData = async () => {
+    // if (!currentUser?.uid) return;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    const snap = await getDoc(userRef);
+
+    if (snap.exists()) {
+      const data = snap.data();
+      setFormData({
+        name: data.name || "",
+        phone: data.phone || "",
+        address: data.address || "",
+      });
+    }
+  };
+
+  fetchUserData();
+}, [currentUser?.uid]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -78,6 +98,7 @@ const ProfilePage = () => {
   };
 
   const handleEditToggle = async () => {
+    
     if (isEditing) {
       // Save changes
       setSaving(true);
@@ -93,6 +114,8 @@ const ProfilePage = () => {
         await updateProfile(auth.currentUser, {
           displayName: formData.name,
         });
+
+        await auth.currentUser.reload();
 
         showNotification("Profile updated successfully!", "success");
         setIsEditing(false);

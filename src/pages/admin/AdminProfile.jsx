@@ -36,7 +36,7 @@ const AdminProfile = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: currentUser?.name || "",
@@ -78,6 +78,8 @@ const AdminProfile = () => {
   };
 
   const handleEditToggle = async () => {
+    console.log(currentUser);
+    
     if (isEditing) {
       // Save changes
       setSaving(true);
@@ -132,8 +134,7 @@ const AdminProfile = () => {
             p: 4,
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          </Box>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}></Box>
           {/* Header */}
           <Box
             sx={{
@@ -269,4 +270,4 @@ const AdminProfile = () => {
   );
 };
 
-export default AdminProfile
+export default AdminProfile;

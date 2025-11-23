@@ -38,8 +38,6 @@ const ManageRoutes = () => {
   const [selectedRoute, setSelectedRoute] = useState({
     routeNo: "",
     name: "",
-    lengthKm: "",
-    rate:""
   });
 
   // Fetch route data
@@ -53,7 +51,7 @@ const ManageRoutes = () => {
   }, []);
 
   const handleOpenAdd = () => {
-    setSelectedRoute({ routeNo: "", name: "", lengthKm: "", rate:"" });
+    setSelectedRoute({ routeNo: "", name: "" });
     setOpenDialog(true);
   };
 
@@ -85,13 +83,11 @@ const ManageRoutes = () => {
         const data = results.data.map((row) => ({
           routeNo: row.routeNo?.trim(),
           name: row.name?.trim(),
-          lengthKm: Number(row.lengthKm),
-          rate: Number(row.rate),
         }));
 
         // ✅ validation check
         const isValid = data.every(
-          (r) => r.routeNo && r.name && r.lengthKm > 0 && r.rate > 0
+          (r) => r.routeNo && r.name > 0
         );
 
         if (!isValid) {
@@ -153,8 +149,6 @@ const ManageRoutes = () => {
                 <TableRow>
                   <TableCell>Route No</TableCell>
                   <TableCell>Route Name</TableCell>
-                  <TableCell>Length (km)</TableCell>
-                  <TableCell>Rate (Rs / km)</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -171,8 +165,6 @@ const ManageRoutes = () => {
                     <TableRow key={route.id}>
                       <TableCell>{route.routeNo}</TableCell>
                       <TableCell>{route.name}</TableCell>
-                      <TableCell>{route.lengthKm} km</TableCell>
-                      <TableCell>Rs. {route.rate}</TableCell>
                       <TableCell align="center">
                         <IconButton color="primary" size="small">
                           <EditIcon />
@@ -214,27 +206,7 @@ const ManageRoutes = () => {
             onChange={handleInputChange}
             required
           />
-          <TextField
-            fullWidth
-            type="number"
-            margin="dense"
-            label="Length (km)"
-            name="lengthKm"
-            value={selectedRoute.lengthKm}
-            onChange={handleInputChange}
-            required
-          />
 
-          <TextField
-            fullWidth
-            type="number"
-            margin="dense"
-            label="Rate (Rs / km)"
-            name="rate"
-            value={selectedRoute.rate}
-            onChange={handleInputChange}
-            required
-          />
         </DialogContent>
 
         <DialogActions>

@@ -13,13 +13,14 @@ import {
 import { db } from "../firebase/config";
 
 // submit complains -----------------------------------------
-export const submitComplaint = async ({ userId, depot, reason, message }) => {
+export const submitComplaint = async ({ userId, depot,bus_No, reason, message }) => {
   try {
     const complaintsRef = collection(db, "complaints");
 
     await addDoc(complaintsRef, {
       userId,
       depot,
+      bus_No,
       reason,
       message: message || "",
       status: "Pending",

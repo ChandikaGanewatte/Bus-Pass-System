@@ -23,7 +23,11 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import MenuBarAdmin from "../../components/MenuBarAdmin";
 import Footer from "../../components/Footer";
-import { getStudentApprovedApplications, getUniStudentApprovedApplications, getAdultApprovedApplications } from "../../services/firebasePassService";
+import {
+  getStudentApprovedApplications,
+  getUniStudentApprovedApplications,
+  getAdultApprovedApplications,
+} from "../../services/firebasePassService";
 import {
   getComplaints,
   updateComplaintStatus,
@@ -33,13 +37,13 @@ import { useNotification } from "../../context/NotificationContext";
 const Dashboard = () => {
   const [approvedStudentPasses, setApprovedStudentPasses] = useState(0);
   const [approvedUniStudentPasses, setApprovedUniStudentPasses] = useState(0);
-  const [approvedAdultPasses, setApprovedAdultPasses] = useState (0)
+  const [approvedAdultPasses, setApprovedAdultPasses] = useState(0);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const {showNotification} = useNotification();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchPasses = async () => {
@@ -48,7 +52,7 @@ const Dashboard = () => {
       const approvedAdultPasses = await getAdultApprovedApplications();
       setApprovedStudentPasses(approvedStdntApps.length);
       setApprovedUniStudentPasses(approvedUniStdntApps.length);
-setApprovedAdultPasses(approvedAdultPasses.length)
+      setApprovedAdultPasses(approvedAdultPasses.length);
       setLoading(false);
     };
     fetchPasses();
@@ -88,7 +92,7 @@ setApprovedAdultPasses(approvedAdultPasses.length)
           c.id === selectedComplaint.id ? { ...c, status: "Completed" } : c
         )
       );
-      showNotification("Make as complete", "success")
+      showNotification("Make as complete", "success");
       handleCloseDialog();
     }
   };
@@ -182,64 +186,67 @@ setApprovedAdultPasses(approvedAdultPasses.length)
                 No complaints to display.
               </Typography>
             ) : (
-              <Box sx={{ maxHeight: 400, overflowY: "auto" }}> 
-              <List>
-                {complaints.map((complaint) => (
-                  <ListItem
-                    key={complaint.id}
-                    sx={{
-                      borderBottom: "1px solid #eee",
-                      py: 1.5,
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleOpenDialog(complaint)}
-                  >
-                    <ListItemText
-                      primary={
-                        <Typography fontWeight={600}>
-                          {complaint.depot} Depot —{" "}
-                          <Typography
-                            component="span"
-                            fontWeight={400}
-                            color="error"
-                          >
-                            {complaint.reason}
+              <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
+                <List>
+                  {complaints.map((complaint) => (
+                    <ListItem
+                      key={complaint.id}
+                      sx={{
+                        borderBottom: "1px solid #eee",
+                        py: 1.5,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleOpenDialog(complaint)}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography fontWeight={600}>
+                            {complaint.depot} Depot —{" "}
+                            <Typography
+                              component="span"
+                              fontWeight={400}
+                              color="error"
+                            >
+                              {complaint.reason}
+                            </Typography>
                           </Typography>
-                        </Typography>
-                      }
-                      secondary={
-                        <div>
-                          <Typography variant="body2" color="text.secondary">
-                            {complaint.message || "No additional message."}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            display="block"
-                          >
-                            {complaint.createdAt?.toDate
-                              ? new Date(
-                                  complaint.createdAt.toDate()
-                                ).toLocaleString()
-                              : ""}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            color={
-                              complaint.status === "Completed"
-                                ? "success.main"
-                                : "warning.main"
-                            }
-                            display="block"
-                          >
-                            Status: {complaint.status || "Pending"}
-                          </Typography>
-                        </div>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
+                        }
+                        secondary={
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">
+                              Bus No: {complaint.bus_No}
+                            <Typography variant="body2" color="text.secondary"> 
+                              {complaint.message || "No additional message."}
+                            </Typography>
+                            </Typography> 
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                            >
+                              {complaint.createdAt?.toDate
+                                ? new Date(
+                                    complaint.createdAt.toDate()
+                                  ).toLocaleString()
+                                : ""}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color={
+                                complaint.status === "Completed"
+                                  ? "success.main"
+                                  : "warning.main"
+                              }
+                              display="block"
+                            >
+                              Status: {complaint.status || "Pending"}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </Box>
             )}
 
@@ -257,6 +264,9 @@ setApprovedAdultPasses(approvedAdultPasses.length)
                   <Box>
                     <Typography>
                       <strong>Depot:</strong> {selectedComplaint.depot}
+                    </Typography>
+                    <Typography>
+                      <strong>Bus No:</strong> {selectedComplaint.bus_No}
                     </Typography>
                     <Typography>
                       <strong>Reason:</strong> {selectedComplaint.reason}

@@ -16,12 +16,122 @@ import Footer from "../components/Footer";
 import { submitComplaint } from "../services/firebaseCommonService"; // import our service
 import { useNotification } from "../context/NotificationContext";
 
-const depots = [
-  "Colombo Depot",
-  "Kandy Depot",
-  "Galle Depot",
-  "Jaffna Depot",
-  "Kurunegala Depot",
+export const depots = [
+  "Colombo Head Office",
+  "Angoda",
+  "Awissawella",
+  "Central Bus Stand",
+  "Homagama",
+  "Kesbewa",
+  "Katubadda",
+  "Maharagama",
+  "Mattakkuliya",
+  "Meethotamulla",
+  "Moratuwa",
+  "Rathmalana",
+  "Thalangama",
+  "Udahamulla",
+  "Eastern",
+  "Akkaraipattu",
+  "Ampara",
+  "Batticola",
+  "Eravur",
+  "Kattankudy",
+  "Kalmunai",
+  "Kanthale",
+  "Muttur",
+  "Trincomalee",
+  "Valaichchenai",
+  "Gampaha region office",
+  "Divulapitiya",
+  "Gampaha",
+  "Ja-Ela",
+  "Kirindiwela",
+  "Kelaniya",
+  "Kadawatha",
+  "Negombo",
+  "Nittambuwa",
+  "Walisara",
+  "Kalutara region Office",
+  "Kalutara",
+  "Aluthgama",
+  "Horana",
+  "Mathugama",
+  "Panadura",
+  "Kandy region office",
+  "Kandy North",
+  "Kandy South",
+  "Theldeniya",
+  "Ududumbara",
+  "Wattegama",
+  "Yatinuwara",
+  "Northern region office",
+  "Jaffna",
+  "Kilinochchi",
+  "Karayinagar",
+  "Mannar",
+  "Pointpedro",
+  "Vavniya",
+  "Mullaithivu",
+  "Nuwara-Eliya region office",
+  "Gampola",
+  "Hanguranketha",
+  "Hatton",
+  "Kotmale",
+  "Nuwaraeliya",
+  "Nawalapitiya",
+  "Walapane",
+  "Rajarata region office",
+  "Anuradhapura",
+  "Dambulla",
+  "Horowpothana",
+  "Kebithigollawa",
+  "Kakirawa",
+  "Mathale",
+  "Polonnaruwa",
+  "Sabaragamuwa region office",
+  "Balangoda",
+  "Deraniyagala",
+  "Embilipitiya",
+  "Godakawela",
+  "Kegalle",
+  "Kalawana",
+  "Mawanella",
+  "Rambukkana",
+  "Rathnapura",
+  "Southern region office",
+  "Amblangoda",
+  "Akuressa",
+  "Ambalanthota",
+  "Elpitita",
+  "Galle",
+  "Hakmana",
+  "Koggala",
+  "Katharagama",
+  "Mathara",
+  "Tangalle",
+  "Udugama",
+  "Uva region office",
+  "Bibila",
+  "Badulla",
+  "Bandarawela",
+  "Dehiaththakandiya",
+  "Kappetipola",
+  "Monaragala",
+  "Mahiyanganaya",
+  "Thanamalwila",
+  "Wayamba region office",
+  "Alawwa",
+  "Chilaw",
+  "Galgamuwa",
+  "Kurunegala North",
+  "Kurunegala South",
+  "Kuliyapitiya",
+  "Maho",
+  "Nikawearatiya",
+  "Puttalam",
+  "Wennappuwa",
+  "Wariyapola"
 ];
 
 const reasons = ["Delay in Service", "Damaged Goods", "Rude Staff", "Other"];
@@ -31,6 +141,7 @@ const ComplainsPage = () => {
 
   const [formData, setFormData] = useState({
     depot: "",
+    bus_No: "",
     reason: "",
     message: "",
   });
@@ -42,7 +153,7 @@ const ComplainsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.depot || !formData.reason || !formData.message) {
+    if (!formData.depot || !formData.bus_No || !formData.reason || !formData.message) {
       showNotification("Please fill all required fields.", "error");
       return;
     }
@@ -51,13 +162,14 @@ const ComplainsPage = () => {
     const result = await submitComplaint({
       userId: "USER_ID_HERE",
       depot: formData.depot,
+      bus_No: formData.bus_No,
       reason: formData.reason,
       message: formData.message,
     });
 
     if (result.success) {
       showNotification("Complaint submitted successfully!", "success");
-      setFormData({ date: null, depot: "", reason: "", message: "" });
+      setFormData({ date: null, depot: "", bus_No: "", reason: "", message: "" });
     } else {
       alert("Error: " + result.message);
     }
@@ -102,6 +214,17 @@ const ComplainsPage = () => {
                 </MenuItem>
               ))}
             </TextField>
+
+            {/* Bus No */}
+            <TextField
+              fullWidth
+              label="Bus No"
+              name="bus_No"
+              value={formData.bus_No}
+              onChange={handleChange}
+              margin="normal"
+              required
+            />
 
             {/* Reason Dropdown */}
             <TextField

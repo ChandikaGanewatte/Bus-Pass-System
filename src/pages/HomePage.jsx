@@ -33,7 +33,7 @@ const HomePage = () => {
   };
 
   const images = [
-    "/imgs/slides/1.jpg",
+    "/imgs/slides/img.webp",
     "/imgs/slides/2.jpg",
     "/imgs/slides/3.jpg",
     "/imgs/slides/4.jpg",
@@ -55,7 +55,7 @@ const HomePage = () => {
                 key={index}
                 sx={{
                   position: "relative",
-                  height: { xs: "40vh", md: "60vh" },
+                  height: { xs: "60vh", md: "80vh" },
                   backgroundImage: `url(${src})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -79,7 +79,7 @@ const HomePage = () => {
                   variant="h3"
                   sx={{
                     zIndex: 1,
-                    fontWeight: 700,
+                    fontWeight: 1000,
                     textAlign: "center",
                     px: 2,
                     mt: 10,
@@ -87,7 +87,7 @@ const HomePage = () => {
                     textShadow: "2px 2px 8px rgba(0,0,0,0.7)",
                   }}
                 >
-                  Bus Session Pass Service
+                  Bus Season Pass Service
                 </Typography>
               </Box>
             ))}

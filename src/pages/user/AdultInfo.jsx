@@ -37,12 +37,12 @@ function AdultInfo() {
               The Adults Season Pass allows regular commuters to travel between
               their home and workplace conveniently at a discounted monthly
               fare. To apply, simply complete the online form with your
-              personal, workplace, and route details, upload a copy of your NIC
-              and payment slip, and submit your application. After submission,
-              the CTB staff will verify your information and notify you by email
-              or SMS once your pass is approved. You can then download your
-              digital QR e-pass directly from your account for use on any CTB
-              bus.
+              personal, workplace, and route details, upload a copy of your
+              NIC(should be clear) and payment slip, and submit your
+              application. After submission, the CTB staff will verify your
+              information and notify you, once your pass is approved. You can
+              then download your digital QR e-pass directly from your account
+              for use on any CTB bus.
             </Typography>
           </Paper>
         </Container>
